@@ -60,4 +60,23 @@ class ProfileController extends Controller
 
         return redirect('/');
     }
+
+     /**
+     * Display a completion status of the resource.
+     */
+
+    public function complete()
+    {
+        $user = Auth::user();
+        if(!$user->name){
+            return Inertia::render('settings/info/personal')->with('error', 'Please complete your personal information first.');
+        }
+
+        if(!$user->designation)
+        {
+            return Inertia::render('settings/info/work')->with('error','Please complete your work information first.');
+        }
+
+        return redirect()->route('dashboard');
+    }
 }

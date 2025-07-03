@@ -11,13 +11,13 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'sendOtp']);
+    Route::get('verify-otp', [RegisteredUserController::class, 'verifyOtp'])->name('verify-otp');
+    Route::get('resend-otp', [RegisteredUserController::class, 'resendOtp'])->name('resend-otp')->middleware('throttle:2,1'); // This route is for resending the OTP
+    Route::post('verify-otp', [RegisteredUserController::class, 'store'])->name('verify-otp.store')->middleware('throttle:5,1');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
