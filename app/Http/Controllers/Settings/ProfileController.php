@@ -72,11 +72,17 @@ class ProfileController extends Controller
             return Inertia::render('settings/info/personal')->with('error', 'Please complete your personal information first.');
         }
 
-        if(!$user->designation)
-        {
-            return Inertia::render('settings/info/work')->with('error','Please complete your work information first.');
-        }
-
         return redirect()->route('dashboard');
+    }
+
+    public function completeProfile(Request $request)
+    {
+        $user = Auth::user();
+        $user->name = $request->input('name');
+        $user->designation = $request->input('designation');
+        $user->experience = $request->input('experience');
+        $user->save();
+
+        return redirect()->route('dashboard')->with('success', 'Profile completed successfully.');
     }
 }
