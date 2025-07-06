@@ -25,7 +25,7 @@ export default function Register() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('account'));
+        post(route('login'));
     };
 
     return (

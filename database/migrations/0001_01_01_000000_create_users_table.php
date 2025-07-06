@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('bio')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('github')->nullable();
+            $table->boolean('is_pwd_changed')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

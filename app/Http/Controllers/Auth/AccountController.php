@@ -27,7 +27,7 @@ class AccountController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function sendOtp(Request $request): RedirectResponse
+    public function sendOtp(Request $request): RedirectResponse | Response
     {
         $request->validate([
             'email' => 'required|string|lowercase|email|max:255',
@@ -35,10 +35,16 @@ class AccountController extends Controller
 
         $email = $request->email;
         $request->session()->put('email', $email);
-        // Generate/send OTP
 
+        // check if password login is enabled
+        $user = User::where('email', $email)->first();
+        if ($user && $user->is_pwd_changed) {
+            return redirect()->route('password.login');
+        }
+
+        // Generate/send OTP
         if (EmailOtp::hasExceededOtpLimit($email)) {
-            return redirect()->route('account')->withErrors(['email' => 'You have reached the OTP request limit for today. Please try again after 24 hours.']);
+            return redirect()->route('login')->withErrors(['email' => 'You have reached the OTP request limit for today. Please try again after 24 hours.']);
         }
 
         EmailOtp::generateAndSend($email);
@@ -51,7 +57,7 @@ class AccountController extends Controller
         $email = $request->session()->get('email');
 
         if (!$email) {
-            return redirect()->route('account')->withErrors(['email' => 'Email not found in session.']);
+            return redirect()->route('login')->withErrors(['email' => 'Email not found in session.']);
         }
 
         // check if email is send and that not expired
@@ -72,11 +78,11 @@ class AccountController extends Controller
 
 
         if (!$email) {
-            return redirect()->route('account')->withErrors(['email' => 'Something went wrong, please try again later.']);
+            return redirect()->route('login')->withErrors(['email' => 'Something went wrong, please try again later.']);
         }
 
         if (EmailOtp::hasExceededOtpLimit($email)) {
-            return redirect()->route('account')->with('error', 'You have reached the OTP request limit for today. Please try again after 24 hours.');
+            return redirect()->route('login')->with('error', 'You have reached the OTP request limit for today. Please try again after 24 hours.');
         }
 
         // Generate and send a new OTP
@@ -100,24 +106,69 @@ class AccountController extends Controller
         $email = $request->session()->get('email');
 
         if (!$email) {
-            return redirect()->route('account')->withErrors(['email' => 'Email not found in session.']);
+            return redirect()->route('login')->withErrors(['email' => 'Email not found in session.']);
         }
 
 
         if (EmailOtp::verify($email, $request->input('otp'))) {
-            $user = User::create([
-                'email' => $email,
-                'password' => Hash::make('password'),
-            ]);
-
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                $user = User::create([
+                    'email' => $email,
+                    'password' => Hash::make('password'),
+                ]);
+            }
             event(new Registered($user));
-
             Auth::login($user);
-
             return redirect()->intended(route('dashboard', absolute: false));
         }
 
         return redirect()->back()->withErrors(['otp' => 'Invalid or expired OTP.'])->withInput();
     }
 
+    // passwordLogin
+    public function passwordLogin(): Response | RedirectResponse
+    {
+        $email = session('email');
+        if (!$email) {
+            return redirect()->route('login')->withErrors(['email' => 'Email not found in session.']);
+        }
+        return Inertia::render('auth/password-login',[
+            'email' => $email,
+        ]);
+    }
+
+    // passwordLoginStore
+    public function passwordLoginStore(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'password' => 'required|string|min:8',
+        ]);
+
+        $email = session('email');
+        if (!$email) {
+            return redirect()->route('login')->withErrors(['email' => 'Email not found in session.']);
+        }
+
+        // check if password login is enabled
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return redirect()->route('login')->withErrors(['email' => 'User not found.']);
+        }
+
+        if (!Hash::check($request->input('password'), $user->password)) {
+            return redirect()->back()->withErrors(['password' => 'Invalid password.'])->withInput();
+        }
+
+        Auth::login($user);
+        return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
 }

@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
 
-    Route::get('account', [AccountController::class, 'account'])->name('account');
+    Route::get('account', [AccountController::class, 'account'])->name('login');
     Route::post('account', [AccountController::class, 'sendOtp'])->name('sendOtp');
     Route::get('verify-otp', [AccountController::class, 'verifyOtp'])->name('verify-otp');
     Route::get('resend-otp', [AccountController::class, 'resendOtp'])->name('resend-otp')->middleware('throttle:2,1');
     Route::post('verify-otp', [AccountController::class, 'accountStore'])->name('verify-otp.store')->middleware('throttle:5,1');
+    // login with password
+    Route::get('login', [AccountController::class, 'passwordLogin'])->name('password.login');
+    Route::post('login', [AccountController::class, 'passwordLoginStore'])->name('password.login.store');
 
     // Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     // Route::post('register', [RegisteredUserController::class, 'sendOtp']);
@@ -42,6 +45,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::post('logout', [AccountController::class, 'logout'])->name('logout');
+});
+
+Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
@@ -58,6 +65,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+    // Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    //     ->name('logout');
 });

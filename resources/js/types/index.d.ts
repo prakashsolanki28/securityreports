@@ -39,5 +39,10 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    profile_image: string | null;
+    bio: string | null;
+    linkedin: string | null;
+    github: string | null;
+    is_pwd_changed: boolean;
+    [key: string]: unknown;
 }

@@ -28,7 +28,8 @@ class User extends Authenticatable
         'designation',
         'experience',
         'linkedin',
-        'github'
+        'github',
+        'is_pwd_changed'
     ];
 
     /**
