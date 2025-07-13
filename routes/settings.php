@@ -7,9 +7,9 @@ use Inertia\Inertia;
 use App\Http\Middleware\ProfileIsComplete;
 
 Route::middleware('auth')->group(function () {
+    Route::get('settings/profile-complete', [ProfileController::class, 'complete'])->name('profile.complete');
+    Route::post('settings/profile-complete', [ProfileController::class, 'completeProfile'])->name('profile.complete.store');
     Route::middleware(ProfileIsComplete::class)->group(function () {
-        Route::get('settings/profile-complete', [ProfileController::class, 'complete'])->name('profile.complete');
-        Route::post('settings/profile-complete', [ProfileController::class, 'completeProfile'])->name('profile.complete.store');
         // settings
         Route::redirect('settings', 'settings/profile');
         Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -77,12 +77,10 @@ const Personal = () => {
           />
           <InputError message={errors.experience} className="mt-2" />
         </div>
-        <div className="flex items-center justify-end mt-4">
           <Button type="submit" tabIndex={5} disabled={processing}>
-            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+            {processing && <LoaderCircle className="h-4 w-4 animate-spin w-full" />}
             Next
           </Button>
-        </div>
       </form>
     </AuthLayout>
   )

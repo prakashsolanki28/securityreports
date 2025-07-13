@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('checklists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignUuid('project_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('assessment_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();

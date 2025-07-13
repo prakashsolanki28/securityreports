@@ -83,6 +83,6 @@ class ProfileController extends Controller
         $user->experience = $request->input('experience');
         $user->save();
 
-        return redirect()->route('dashboard')->with('success', 'Profile completed successfully.');
+        return redirect()->route('startup.project.invite')->with('success', 'Profile completed successfully.');
     }
 }

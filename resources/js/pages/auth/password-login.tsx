@@ -7,7 +7,6 @@ import InputError from '@/components/input-error'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 
-
 type PasswordLoginProps = {
   email: string;
 };
@@ -25,9 +24,9 @@ const PasswordLogin: React.FC<PasswordLoginProps> = ({ email }) => {
   }
 
   return (
-    <AuthLayout title="Verify OTP" description="Enter your OTP below to verify your account">
+    <AuthLayout title="Password" description="Enter your password below to verify your account">
       <Head title="Register" />
-      <form className="flex flex-col gap-6" onSubmit={passwordLogin}>
+      <form className="flex flex-col gap-3" onSubmit={passwordLogin}>
         <div className="grid gap-2">
           <Label htmlFor="email">Email address</Label>
           <Input

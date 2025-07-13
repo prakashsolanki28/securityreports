@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('project_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->enum('severity', ['low', 'medium', 'high', 'critical'])->default('low');

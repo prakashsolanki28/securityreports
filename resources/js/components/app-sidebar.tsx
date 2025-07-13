@@ -13,6 +13,11 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+    {
+        title: 'Security Reports',
+        href: '/security-reports',
+        icon: Folder,
+    }
 ];
 
 const footerNavItems: NavItem[] = [
